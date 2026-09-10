@@ -16,6 +16,7 @@ namespace ContactAdder.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequestFormLimits(ValueCountLimit = 20000)]
         public async Task<IActionResult> PreviewContacts(VCardUploadViewModel model)
         {
             if (model.ExcelFile == null || model.ExcelFile.Length == 0)
@@ -84,6 +85,7 @@ namespace ContactAdder.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequestFormLimits(ValueCountLimit = 20000)]
         public IActionResult ExportSelected(VCardUploadViewModel model)
         {
             var selectedContacts = model.Contacts.Where(c => c.IsSelected).ToList();
