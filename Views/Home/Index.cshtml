@@ -150,7 +150,7 @@
 
     <div class="text-center mb-4">
         <h2 class="fw-bold text-white mb-2"><i class="bi bi-whatsapp text-success me-2"></i>WhatsApp Kontakt Meneceri</h2>
-        <p class="text-secondary small mb-0">Excel faylından kontaktları seçin və <strong>"Ww EVS"</strong> formatında .vcf faylı kimi yükləyin</p>
+        <p class="text-secondary small mb-0">Excel faylından kontaktları seçin və <strong>"@Model.Suffix"</strong> formatında .vcf faylı kimi yükləyin</p>
     </div>
 
     @if (Model.Contacts == null || Model.Contacts.Count == 0)
@@ -175,6 +175,11 @@
                     </div>
                 </div>
 
+                <div class="mb-4 text-start" onclick="event.stopPropagation();">
+                    <label asp-for="Suffix" class="form-label text-secondary small mb-1">Ad sonuna əlavə ediləcək etiket</label>
+                    <input asp-for="Suffix" class="form-control" placeholder="Ww EVS" autocomplete="off" />
+                </div>
+
                 <button type="submit" class="btn btn-wa w-100 d-flex align-items-center justify-content-center gap-2">
                     <i class="bi bi-eye"></i>
                     <span>Kontaktları Oxu və Göstər</span>
@@ -186,6 +191,7 @@
     {
         <form action="/Home/ExportSelected" method="post">
             @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Suffix" />
             <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-3"></div>
 
             <div class="glass-card p-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
@@ -232,7 +238,7 @@
                                     <div>
                                         <div class="fw-semibold text-white mb-1 d-flex align-items-center gap-2">
                                             <span>@Model.Contacts[i].FirstName @Model.Contacts[i].LastName</span>
-                                            <span class="tag-badge">Ww EVS</span>
+                                            <span class="tag-badge">@Model.Suffix</span>
                                         </div>
                                         <span class="phone-badge">
                                             <i class="bi bi-telephone-fill me-1" style="font-size: 0.75rem;"></i>@Model.Contacts[i].PhoneNumber

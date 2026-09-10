@@ -56,9 +56,9 @@ namespace ContactAdder.Controllers
                         if (string.IsNullOrEmpty(cleanedPhone))
                             continue;
 
-                        string tamAd = string.IsNullOrWhiteSpace(soyad)
-                            ? $"{ad} Ww EVS"
-                            : $"{ad} {soyad} Ww EVS";
+                        string suffix = model.Suffix?.Trim() ?? string.Empty;
+                        string baseName = string.IsNullOrWhiteSpace(soyad) ? ad : $"{ad} {soyad}";
+                        string tamAd = string.IsNullOrEmpty(suffix) ? baseName : $"{baseName} {suffix}";
 
                         contactList.Add(new ContactItemViewModel
                         {
@@ -94,6 +94,7 @@ namespace ContactAdder.Controllers
                 return View("Index", model);
             }
 
+            string suffix = model.Suffix?.Trim() ?? string.Empty;
             var sb = new StringBuilder();
 
             foreach (var contact in selectedContacts)
@@ -101,13 +102,27 @@ namespace ContactAdder.Controllers
                 sb.AppendLine("BEGIN:VCARD");
                 sb.AppendLine("VERSION:3.0");
                 sb.AppendLine($"FN;CHARSET=UTF-8:{contact.FullName}");
-                sb.AppendLine($"N;CHARSET=UTF-8:{contact.LastName};{contact.FirstName};;;");
+                sb.AppendLine($"N;CHARSET=UTF-8:{contact.LastName};{contact.FirstName};;;{suffix}");
                 sb.AppendLine($"TEL;TYPE=CELL:{contact.PhoneNumber}");
                 sb.AppendLine("END:VCARD");
             }
 
             byte[] fileBytes = Encoding.UTF8.GetBytes(sb.ToString());
-            return File(fileBytes, "text/vcard; charset=utf-8", "kontaktlar_Ww_EVS.vcf");
+            string fileName = BuildFileName(model.Suffix);
+            return File(fileBytes, "text/vcard; charset=utf-8", fileName);
+        }
+
+        private static string BuildFileName(string? suffix)
+        {
+            suffix = suffix?.Trim() ?? string.Empty;
+            if (string.IsNullOrEmpty(suffix))
+                return "kontaktlar.vcf";
+
+            var invalidChars = Path.GetInvalidFileNameChars();
+            string safeSuffix = new string(suffix.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray())
+                .Replace(' ', '_');
+
+            return $"kontaktlar_{safeSuffix}.vcf";
         }
 
         private static string CleanPhoneNumber(string phone)
